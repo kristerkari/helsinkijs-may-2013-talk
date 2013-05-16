@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Topics</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Introduction to Toons</li>
+        <li>Why Web app</li>
+        <li>Web app challenges</li>
+        <li>Memory saving &amp; performance tricks</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>First six weeks: over 150M Toons views</h2>
+    </hgroup>
+    <article style="margin-top: 5px">
+      <img src="images/toons.jpg" alt="" style="max-width: 100%; max-height: 90%;">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Toons are available on multiple platforms</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Angry Birds games: web + native, hybrid app</li>
+        <li>Samsung SmartTV: web app</li>
+        <li>+ Other distribution channels</li>
+        <li>This talk is about the iOS/Android web app</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Why Web app instead of fully native?</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>Able to develop outside the game update cycle</li>
+        <li>Does not increase the file size of game install packages</li>
+        <li>Still able to use components from game</li>
+        <li>"Easy" to port to other platforms</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>What do we know (Android &amp; iOS)</h2>
+    </hgroup>
+    <article>
+     <ul class="build">
+      <li>User's device most likely has a touch screen</li>
+      <li>WebKit based browsers</li>
+      <li>Browsers have decent HTML5/JS/CSS3 support</li>
+      <li>Game provides platform info (OS, OS version, resolution, etc.)</li>
+    </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Frontend libraries used for the app</h2>
+    </hgroup>
+    <article>
+      <ul>
+          <li>Backbone</li>
+          <li>Lo-Dash</li>
+          <li>Zepto</li>
+          <li>Rewritten version of SwipeView</li>
+        </ul>
+    </article>
+  </slide>
+
+  <slide class="title-slide">
+    <hgroup>
+      <h1>Web app challenges</h1>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Biggest challenges</h2>
+    </hgroup>
+    <article>
+     <ul class="build">
+      <li>Limited memory (runs on top of a game, image heavy UI)</li>
+      <li>Web browser performance on Android</li>
+      <li>Bugs/fragmentation on Android</li>
+      <li>Scaling the UI to different screens</li>
+      <li>Limited connections speeds (many users have really slow connections)</li>
+    </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Challenges - Android browser performance</h2>
+    </hgroup>
+    <article>
+     <div id="fastest_vs_slowest" style="height: 540px; width: 800px;"></div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Challenges - Scaling UI for different screen sizes</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>Fullscreen UI, somewhat flexible to both directions</li>
+        <li>No vector graphics: Android versions less than 3 do not support SVG</li>
+        <li>Images can't really be much larger than what fits the resolution (or memory runs out)</li>
+        <li>No media queries (MQs get bloated really fast with this kind of layout)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>A resolution selector figures out the best resolution for the device</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>With a direct match returns assets for matching resolution</li>
+        <li>If not a direct match, figures out if minimum content width and height can fit</li>
+        <li>If content does not fit drops down to a lower resolution</li>
+        <li>Not a perfect solution, but always tries to get <strong>something</strong> to fit the screen</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="title-slide">
+    <hgroup>
+      <h1>Memory saving &amp; performace tricks</h1>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Mobile web app performance tricks</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>Show the UI ASAP (before content is fully loaded)</li>
+        <li>Minimize nr. of total HTTP requests</li>
+        <li>Preload intelligently</li>
+        <li>Keep nr. of AJAX reqs for your JSON data to minimum</li>
+        <li>Cache as much as possible</li>
+        <li>Try to reuse your assets and elements</li>
+      </ul>
+    </article>
+
+  </slide>
+
+        <slide>
+          <hgroup>
+            <h2>Caching the web app</h2>
+          </hgroup>
+          <article>
+            <ul class="build">
+              <li>HTML5 localStorage not usable for us, increases memory usage on iOS</li>
+              <li>HTML5 App cache would require the UI to reload when assets are updated</li>
+              <li>We use long caching headers + filenames with a hash to allow cache to be purged</li>
+              <li>On Android persistent caching works ok, iOS needed some work</li>
+            </ul>
+          </article>
+        </slide>
+
+        <slide>
+          <hgroup>
+            <h2>Caching: NSURLCache</h2>
+            <h3>(default cache for iOS WebView)</h3>
+          </hgroup>
+          <article>
+               <ul class="build">
+            <li>No disk caching in iOS 4 (only memory caching).</li>
+            <li>Disk caching capability after iOS 5, but iOS 5 doesn't persistently cache HTTPS responses</li>
+            <li>After iOS 6 persistent HTTPS caching is supported</li>
+          </ul>
+          </article>
+
+
+        </slide>
+
+        <slide>
+          <hgroup>
+            <h2>Caching: NSURLCache</h2>
+            <h3>(default cache for iOS WebView)</h3>
+          </hgroup>
+          <article class="flexbox">
+          <q class="none">Since all resources (html, js, images, etc) are served from HTTPS, we have implemented custom WebView caching based on iOS' URL loading system for iOS 5 and lower.</q>
+          </article>
+        </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Speedy infinite scrolling: Reuse DOM nodes</h2>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>Infinite scrollable list: only 15 "movie poster" + 5 container elements are needed.</li>
+        <li>Create elements once, move around with CSS transform: translate(x, y)</li>
+        <li>Avoid doing changes when user is scrolling</li>
+        <li>When user stops scrolling: unload and fill elements with new content.</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Decrease total file size: How we save additional bytes</h2>
+    </hgroup>
+    <article>
+      <p>We:</p>
+      <ul class="build">
+        <li>Configure Gzipping for text based assests</li>
+        <li>Minify JS with Google Closure Compiler</li>
+        <li>Use Pngquant to convert PNGs to 8-bit</li>
+        <li>Images are big, replace with CSS3, @font-face, etc.</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Decrease total file size: Reuse images</h2>
+    </hgroup>
+    <article>
+      <img src="images/after.png" alt="" style="max-width: 100%; max-height: 80%">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Only 1 curtain &amp; half of the bg gets loaded</h2>
+    </hgroup>
+    <article>
+      <img src="images/before.png" alt="" style="max-width: 100%; max-height: 80%">
+    </article>
+  </slide>
+
+  <slide class="title-slide">
+
+    <article class="flexbox vcenter hcenter">
+      <q class="none">
+          transform: scaleX(-1);
+      </q>
+    </article>
+
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Those images are actually just flipped with CSS</h2>
+    </hgroup>
+    <article>
+      <img src="images/after.png" alt="" style="max-width: 100%; max-height: 80%">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Decrease total file size: Strip unused font characters</h2>
+    </hgroup>
+    <article>
+      <p>In one of our fonts we only need these:</p>
+      <q class="none birds">
+        0123456789SPECIALS
+      </q>
+      <p>&nbsp;</p>
+      <p><a href="http://www.fontsquirrel.com/tools/webfont-generator">fontsquirrel.com/tools/webfont-generator</a></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Decrease total file size: Modular JS libraries,<br>include only the modules you need</h2>
+    </hgroup>
+    <article>
+      <div class="build">
+       <p>Lo-Dash<br>
+      <pre class="prettyprint" data-lang="bash">
+        $ npm install lodash -g
+        $ lodash backbone mobile
+      </pre>
+      </p>
+      </div>
+      <div class="build">
+      <p>Zepto</p>
+      <pre  class="prettyprint" data-lang="bash">
+        $ git clone https://github.com/madrobby/zepto.git
+        $ cd zepto
+        $ npm install
+        $ MODULES="zepto event ajax" ./make dist
+      </pre>
+      </div>
+    </article>
+  </slide>
+
+        <slide>
+          <hgroup>
+            <h2>Memory saving tricks</h2>
+          </hgroup>
+          <article>
+            <p>Images take a lot of memory, so:</p>
+            <ul class="build">
+              <li>If possible, use CSS3 &amp; web fonts instead of images</li>
+              <li>Keep only currently visible images loaded</li>
+              <li>Split spritesheet images based on what is shown and hidden</li>
+              <li>Use non-retina images for high dpi devices with limited RAM</li>
+            </ul>
+          </article>
+        </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Memory: keep only visible images loaded</h2>
+    </hgroup>
+
+    <article>
+      <ul>
+        <li><div style="display: inline-block; background-color:#8baa38; width: 20px; height: 20px;"></div> Middle page (3 images)</li>
+        <li><div style="display: inline-block; background-color:#0c43a7; width: 20px; height: 20px;"></div> Pages on the sides (6 images)</li>
+        <li><div style="display: inline-block; background-color:#c80cd9; width: 20px; height: 20px;"></div> First and fifth page (2 images)</li>
+        <li>= Only maximum of 11 images need to be loaded</li>
+      </ul>
+      <img src="images/viewport.png" alt="" style="max-width: 100%">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Memory: unload images for infinite scrolling</h2>
+    </hgroup>
+    <article>
+          <article class="flexbox vcenter hcenter">
+            <p>&nbsp;</p>
+      <q class="none">
+          Use an empty GIF image (base64 encoded DataURI) to force image unloading when the image is no longer needed:
+      </q>
+      <p>&nbsp;</p>
+      <pre class="prettyprint">
+        img.src = &quot;data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==&quot;;
+      </pre>
+    </article>
+    </article>
+  </slide>
+
+  <slide class="title-slide">
+    <hgroup>
+      <h1>Thanks.</h1>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Twitter: <a href="https://twitter.com/KristerKari">@KristerKari</a></li>
+        <li>GitHub: <a href="https://github.com/kristerkari">kristerkari</a></li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="backdrop"></slide>
+
+</slides>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script>
+  $('#fastest_vs_slowest').highcharts({
+            colors: [
+            '#AA4643'
+            ],
+            chart: {
+                type: 'bar',
+                margin: [ 50, 50, 100, 80]
+            },
+            title: {
+                text: 'Peacekeeper score (iPad4 is 20x faster)',
+                style: {
+                        fontSize: '22px',
+                        fontWeight: 'bold'
+                }
+            },
+            xAxis: {
+                categories: [
+                    'iPad 4 Wifi<br>iOS 6.0.1',
+                    'HTC Legend<br>Android 2.2'
+                ],
+                labels: {
+                    rotation: 0,
+                    align: 'right',
+                    style: {
+                        fontSize: '16px',
+                        fontFamily: 'Verdana, sans-serif',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total score',
+                        fontWeight: 'bold'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>'+ this.x +'</b><br/>'+
+                        'Peacekeeper result: '+ this.y;
+                }
+            },
+            series: [{
+                name: 'Milliseconds',
+                data: [927, 47],
+                dataLabels: {
+                    enabled: true,
+                    rotation: 0,
+                    color: '#FFFFFF',
+                    align: 'right',
+                    x: -4,
+                    y: 0,
+                    style: {
+                        fontSize: '12px',
+                        fontFamily: 'Verdana, sans-serif',
+                        fontWeight: 'bold'
+                    }
+                }
+            }]
+        });
+
+</script>
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
